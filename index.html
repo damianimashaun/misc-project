@@ -95,7 +95,7 @@
       var linker = new DeepLinker({
         onIgnored: function () {
           console.log("browser failed to respond to the deep link");
-          window.location = "https://invest.pub.islamicfinanceguru.dev";
+          window.location.href = "https://invest.pub.islamicfinanceguru.dev";
         },
         onFallback: function () {
           console.log("dialog hidden or user returned to tab");
