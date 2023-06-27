@@ -148,6 +148,7 @@
         try {
           window.location.href = urlScheme;
         } catch (error) {
+          console.log("try catch failed");
           // The app could not be launched. Redirect to the fallback website.
           window.location.href = "https://invest.pub.islamicfinanceguru.dev";
         }
