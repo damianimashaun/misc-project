@@ -108,37 +108,59 @@
       //   linker.openURL(url);
 
       function launchAppWithFallback(appUrl, fallbackUrl) {
-        var iframe = document.createElement("iframe");
-        iframe.style.display = "none";
+        var userAgent = window.navigator.userAgent.toLowerCase();
 
-        // Try to open the app URL scheme
-        iframe.src = appUrl;
+        // Check if the browser is Safari
+        if (
+          userAgent.indexOf("safari") !== -1 &&
+          userAgent.indexOf("chrome") === -1
+        ) {
+          // Safari browser, trigger the app launch using window.location.href
+          window.location.href = appUrl;
 
-        // Check if the app is launched successfully by listening for the blur event
-        window.addEventListener("blur", function () {
-          // App is launched, no action needed
-        });
+          // Timeout to redirect to the fallback URL after a certain period
+          var fallbackTimeout = setTimeout(function () {
+            window.location.href = fallbackUrl;
+          }, 2000); // Change the timeout duration as needed
 
-        // Timeout to redirect to the fallback URL after a certain period
-        var fallbackTimeout = setTimeout(function () {
-          window.location.href = fallbackUrl;
-        }, 2000); // Change the timeout duration as needed
+          // Clear the fallback timeout if the app is launched successfully
+          window.addEventListener("pagehide", function () {
+            clearTimeout(fallbackTimeout);
+          });
+        } else {
+          // Non-Safari browser, create an iframe to try opening the app URL scheme
+          var iframe = document.createElement("iframe");
+          iframe.style.display = "none";
 
-        // Clear the fallback timeout if the app is launched successfully
-        window.addEventListener("focus", function () {
-          clearTimeout(fallbackTimeout);
-        });
+          // Try to open the app URL scheme
+          iframe.src = appUrl;
 
-        // Append the iframe to the document body
-        document.body.appendChild(iframe);
+          // Check if the app is launched successfully by listening for the blur event
+          window.addEventListener("blur", function () {
+            // App is launched, no action needed
+          });
+
+          // Timeout to redirect to the fallback URL after a certain period
+          var fallbackTimeout = setTimeout(function () {
+            window.location.href = fallbackUrl;
+          }, 2000); // Change the timeout duration as needed
+
+          // Clear the fallback timeout if the app is launched successfully
+          window.addEventListener("focus", function () {
+            clearTimeout(fallbackTimeout);
+          });
+
+          // Append the iframe to the document body
+          document.body.appendChild(iframe);
+        }
       }
 
       // Usage example
-      //   var appUrlScheme = "cur8://live-deals"; // Replace with your app's URL scheme
-      //   var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev"; // Replace with your fallback website URL
+      var appUrlScheme = "cur8://live-deals"; // Replace with your app's URL scheme
+      var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev"; // Replace with your fallback website URL
 
       // Call the function with the app URL scheme and fallback website URL
-      //   launchAppWithFallback(appUrlScheme, fallbackWebsite);
+      launchAppWithFallback(appUrlScheme, fallbackWebsite);
 
       function launchApp() {
         // Get the URL scheme for the specified app.
@@ -154,7 +176,7 @@
         }
       }
 
-      launchApp();
+      //   launchApp();
 
       //   setTimeout(() => {
       //     var win = window.open("cur8://live-deals", "_self");
