@@ -134,11 +134,26 @@
       }
 
       // Usage example
-      var appUrlScheme = "cur8://live-deals"; // Replace with your app's URL scheme
-      var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev"; // Replace with your fallback website URL
+      //   var appUrlScheme = "cur8://live-deals"; // Replace with your app's URL scheme
+      //   var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev"; // Replace with your fallback website URL
 
       // Call the function with the app URL scheme and fallback website URL
-      launchAppWithFallback(appUrlScheme, fallbackWebsite);
+      //   launchAppWithFallback(appUrlScheme, fallbackWebsite);
+
+      function launchApp() {
+        // Get the URL scheme for the specified app.
+        const urlScheme = "cur8://live-deals";
+
+        // Try to launch the app using its URL scheme.
+        try {
+          window.location.href = urlScheme;
+        } catch (error) {
+          // The app could not be launched. Redirect to the fallback website.
+          window.location.href = "https://invest.pub.islamicfinanceguru.dev";
+        }
+      }
+
+      launchApp();
 
       //   setTimeout(() => {
       //     var win = window.open("cur8://live-deals", "_self");
