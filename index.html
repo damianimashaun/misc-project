@@ -108,18 +108,29 @@
       //   linker.openURL(url);
 
       function launchAppWithFallback(appUrl, fallbackUrl) {
-        // Attempt to launch the app by creating an anchor element with the app URL
-        var appLink = document.createElement("a");
-        appLink.href = appUrl;
+        var iframe = document.createElement("iframe");
+        iframe.style.display = "none";
 
-        // Check if the app is installed by checking the existence of the "href" property
-        if (appLink.href) {
-          // App is installed, so redirect to the app URL
-          window.location.href = appUrl;
-        } else {
-          // App is not installed, redirect to the fallback URL
+        // Try to open the app URL scheme
+        iframe.src = appUrl;
+
+        // Check if the app is launched successfully by listening for the blur event
+        window.addEventListener("blur", function () {
+          // App is launched, no action needed
+        });
+
+        // Timeout to redirect to the fallback URL after a certain period
+        var fallbackTimeout = setTimeout(function () {
           window.location.href = fallbackUrl;
-        }
+        }, 2000); // Change the timeout duration as needed
+
+        // Clear the fallback timeout if the app is launched successfully
+        window.addEventListener("focus", function () {
+          clearTimeout(fallbackTimeout);
+        });
+
+        // Append the iframe to the document body
+        document.body.appendChild(iframe);
       }
 
       // Usage example
