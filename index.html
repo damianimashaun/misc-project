@@ -7,13 +7,12 @@
 
   <body>
     <h1>
-        <a href="cur8://live-deals">Open App</a>
+      <a href="cur8://live-deals">Open App</a>
     </h1>
     <script>
       function launchAppWithFallback(appUrl, fallbackUrl) {
         var userAgent = window.navigator.userAgent.toLowerCase();
 
-        // Check if the browser is Safari
         if (
           userAgent.indexOf("safari") !== -1 &&
           userAgent.indexOf("chrome") === -1
@@ -30,8 +29,33 @@
           window.addEventListener("pagehide", function () {
             clearTimeout(fallbackTimeout);
           });
+        } else if (
+          userAgent.indexOf("android") !== -1 &&
+          userAgent.indexOf("chrome") !== -1
+        ) {
+          // Android with Chrome browser, use intent URI scheme
+          var intentUrl =
+            "intent://" +
+            appUrl.substr(appUrl.indexOf("://") + 3) +
+            "#Intent;package=" +
+            appUrl.substr(appUrl.indexOf("://") + 3) +
+            ";scheme=" +
+            appUrl.substr(0, appUrl.indexOf("://")) +
+            ";end";
+
+          window.location.href = intentUrl;
+
+          // Timeout to redirect to the fallback URL after a certain period
+          var fallbackTimeout = setTimeout(function () {
+            window.location.href = fallbackUrl;
+          }, 2000); // Change the timeout duration as needed
+
+          // Clear the fallback timeout if the app is launched successfully
+          window.addEventListener("blur", function () {
+            clearTimeout(fallbackTimeout);
+          });
         } else {
-          // Non-Safari browser, create an iframe to try opening the app URL scheme
+          // Non-Safari and non-Chrome Android browsers, create an iframe to try opening the app URL scheme
           var iframe = document.createElement("iframe");
           iframe.style.display = "none";
 
