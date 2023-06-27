@@ -7,106 +7,6 @@
 
   <body>
     <script>
-      function DeepLinker(options) {
-        if (!options) {
-          throw new Error("no options");
-        }
-
-        var hasFocus = true;
-        var didHide = false;
-
-        // window is blurred when dialogs are shown
-        function onBlur() {
-          console.log("onBlur");
-          hasFocus = false;
-        }
-
-        // document is hidden when native app is shown or browser is backgrounded
-        function onVisibilityChange(e) {
-          console.log("onVisibilityChange");
-          if (e.target.visibilityState === "hidden") {
-            didHide = true;
-          }
-        }
-
-        // window is focused when dialogs are hidden, or browser comes into view
-        function onFocus() {
-          console.log("onFocus");
-          if (didHide) {
-            if (options.onReturn) {
-              options.onReturn();
-            }
-
-            didHide = false; // reset
-          } else {
-            // ignore duplicate focus event when returning from native app on
-            // iOS Safari 13.3+
-            if (!hasFocus && options.onFallback) {
-              // wait for app switch transition to fully complete - only then is
-              // 'visibilitychange' fired
-              setTimeout(function () {
-                // if browser was not hidden, the deep link failed
-                if (!didHide) {
-                  options.onFallback();
-                }
-              }, 1000);
-            }
-          }
-
-          hasFocus = true;
-        }
-
-        // add/remove event listeners
-        // `mode` can be "add" or "remove"
-        function bindEvents(mode) {
-          [
-            [window, "blur", onBlur],
-            [document, "visibilitychange", onVisibilityChange],
-            [window, "focus", onFocus],
-          ].forEach(function (conf) {
-            conf[0][mode + "EventListener"](conf[1], conf[2]);
-          });
-        }
-
-        // add event listeners
-        bindEvents("add");
-
-        // expose public API
-        this.destroy = bindEvents.bind(null, "remove");
-        this.openURL = function (url) {
-          // it can take a while for the dialog to appear
-          var dialogTimeout = 500;
-
-          setTimeout(function () {
-            if (hasFocus && options.onIgnored) {
-              options.onIgnored();
-            }
-          }, dialogTimeout);
-
-          window.location = url;
-        };
-      }
-
-      /* usage */
-
-      //   var url = "cur8://live-deals";
-      //   var badURL = "lksadjgajsdhfaskd://slkdfs";
-
-      //   var linker = new DeepLinker({
-      //     onIgnored: function () {
-      //       console.log("browser failed to respond to the deep link");
-      //       window.location.href = "https://invest.pub.islamicfinanceguru.dev";
-      //     },
-      //     onFallback: function () {
-      //       console.log("dialog hidden or user returned to tab");
-      //     },
-      //     onReturn: function () {
-      //       console.log("user returned to the page from the native app");
-      //     },
-      //   });
-
-      //   linker.openURL(url);
-
       function launchAppWithFallback(appUrl, fallbackUrl) {
         var userAgent = window.navigator.userAgent.toLowerCase();
 
@@ -155,37 +55,10 @@
         }
       }
 
-      // Usage example
-      var appUrlScheme = "cur8://live-deals"; // Replace with your app's URL scheme
-      var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev"; // Replace with your fallback website URL
+      var appUrlScheme = "cur8://live-deals";
+      var fallbackWebsite = "https://invest.pub.islamicfinanceguru.dev";
 
-      // Call the function with the app URL scheme and fallback website URL
       launchAppWithFallback(appUrlScheme, fallbackWebsite);
-
-      function launchApp() {
-        // Get the URL scheme for the specified app.
-        const urlScheme = "cur8://live-deals";
-
-        // Try to launch the app using its URL scheme.
-        try {
-          window.location.href = urlScheme;
-        } catch (error) {
-          console.log("try catch failed");
-          // The app could not be launched. Redirect to the fallback website.
-          window.location.href = "https://invest.pub.islamicfinanceguru.dev";
-        }
-      }
-
-      //   launchApp();
-
-      //   setTimeout(() => {
-      //     var win = window.open("cur8://live-deals", "_self");
-      //     if (!win) {
-      //       window.location.href = "https://invest.pub.islamicfinanceguru.dev";
-      //     }
-
-      //     console.log({ win });
-      //   }, 1);
     </script>
   </body>
 </html>
